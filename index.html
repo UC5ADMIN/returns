@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UC5 Returns</title>
+<meta name="theme-color" content="#6D4C2F">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+:root{
+  --primary:#6D4C2F; --on-primary:#fff; --primary-c:#F3E2D3; --on-primary-c:#2B1709;
+  --surface:#FFF8F4; --surface-2:#F7ECE4; --outline:#D7C3B5; --text:#211A15; --muted:#6E5D52;
+  --ok:#2E7D32; --ok-c:#DDF2DE; --warn:#9A5B00; --warn-c:#FFE9C7; --err:#B3261E; --err-c:#F9DEDC;
+  --info:#24527A; --info-c:#DCEBF8; --radius:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--surface);color:var(--text);font:15px/1.45 Roboto,system-ui,sans-serif}
+button,input,textarea,select{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:5;background:var(--primary);color:var(--on-primary);display:flex;align-items:center;gap:8px;padding:12px 16px}
+header h1{font-size:18px;font-weight:500;margin:0;flex:1}
+.badge{font-size:11px;padding:2px 8px;border-radius:99px;background:#ffffff33}
+.icon-btn{background:none;border:0;color:inherit;width:40px;height:40px;border-radius:50%;cursor:pointer;display:grid;place-items:center}
+.icon-btn:hover{background:#ffffff22}
+.icon-btn svg{width:22px;height:22px;fill:currentColor}
+main{max-width:760px;margin:0 auto;padding:16px 16px 96px}
+section[hidden]{display:none}
+.card{background:#fff;border:1px solid var(--outline);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+label.f{display:block;font-size:12px;font-weight:500;color:var(--muted);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.04em}
+.in{width:100%;padding:12px 14px;border:1px solid var(--outline);border-radius:12px;background:#fff;outline:none}
+.in:focus{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-c)}
+.row{display:flex;gap:8px}
+.row .in{flex:1}
+.barcode{font-family:ui-monospace,Menlo,monospace;font-size:17px;letter-spacing:.03em}
+.btn{border:0;border-radius:99px;padding:12px 20px;font-weight:500;cursor:pointer;background:var(--primary);color:var(--on-primary);display:inline-flex;align-items:center;gap:8px;justify-content:center}
+.btn.tonal{background:var(--primary-c);color:var(--on-primary-c)}
+.btn.text{background:none;color:var(--primary);padding:8px 12px}
+.btn.danger{background:var(--err-c);color:var(--err)}
+.btn.block{width:100%;padding:15px;font-size:16px;margin-top:20px}
+.btn:disabled{opacity:.5;cursor:default}
+.btn svg{width:20px;height:20px;fill:currentColor}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--outline);background:#fff;border-radius:10px;padding:9px 14px;cursor:pointer;min-width:48px;text-align:center}
+.chip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--outline);border-radius:12px;overflow:hidden}
+.seg button{border:0;background:#fff;padding:12px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--outline)}
+.seg button.on.yes{background:var(--warn-c);color:var(--warn);font-weight:500}
+.seg button.on.no{background:var(--ok-c);color:var(--ok);font-weight:500}
+.hint{font-size:13px;color:var(--muted);margin-top:6px}
+.warnbox{background:var(--warn-c);color:var(--warn);border-radius:10px;padding:8px 12px;font-size:13px;margin-top:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:480px){.grid2{grid-template-columns:1fr}}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface-2);border-top:1px solid var(--outline);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav button{flex:1;max-width:200px;border:0;background:none;padding:8px 0 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted)}
+nav button span.pill{width:56px;height:30px;border-radius:99px;display:grid;place-items:center}
+nav button svg{width:22px;height:22px;fill:currentColor}
+nav button.on{color:var(--text);font-weight:500}
+nav button.on span.pill{background:var(--primary-c)}
+.filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px}
+.filters .chip{white-space:nowrap;padding:7px 12px;font-size:13px}
+.filters .chip b{margin-left:4px}
+.item{background:#fff;border:1px solid var(--outline);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.item-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.item h3{margin:0;font-size:16px;font-weight:500}
+.item .meta{font-size:13px;color:var(--muted);margin-top:2px;word-break:break-all}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tag{font-size:12px;padding:3px 8px;border-radius:6px;background:var(--surface-2);color:var(--muted)}
+.tag.warn{background:var(--warn-c);color:var(--warn)}
+.tag.err{background:var(--err-c);color:var(--err)}
+.st{font-size:12px;font-weight:500;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.st-Received{background:var(--info-c);color:var(--info)}
+.st-Cleaning{background:var(--warn-c);color:var(--warn)}
+.st-Repackaging{background:var(--primary-c);color:var(--primary)}
+.st-Ready{background:var(--ok-c);color:var(--ok)}
+.st-Unsellable{background:var(--err-c);color:var(--err)}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.actions .btn{padding:9px 16px;font-size:14px}
+.timeline{font-size:12px;color:var(--muted);margin-top:8px;display:flex;flex-wrap:wrap;gap:4px 14px}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.stat{background:#fff;border:1px solid var(--outline);border-radius:var(--radius);padding:14px}
+.stat .n{font-size:28px;font-weight:500;line-height:1.1}
+.stat .l{font-size:12px;color:var(--muted);margin-top:4px}
+.bar{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:14px}
+.bar .lbl{width:38%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .track{flex:1;height:10px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.bar .fill{height:100%;background:var(--primary);border-radius:99px}
+.bar .v{width:32px;text-align:right;font-weight:500}
+h2{font-size:15px;font-weight:500;margin:0 0 10px}
+.empty{text-align:center;color:var(--muted);padding:40px 16px}
+.modal{position:fixed;inset:0;background:#0009;z-index:20;display:grid;place-items:center;padding:16px}
+.modal[hidden]{display:none}
+.sheet{background:#fff;border-radius:24px;padding:20px;width:100%;max-width:440px}
+.sheet h2{font-size:18px}
+#reader{width:100%;border-radius:12px;overflow:hidden;background:#000;min-height:220px}
+.toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);background:#2B2420;color:#fff;padding:12px 18px;border-radius:12px;z-index:30;max-width:90vw;box-shadow:0 4px 16px #0004;font-size:14px}
+.toast.err{background:var(--err)}
+.toast[hidden]{display:none}
+.spin{position:fixed;inset:0;z-index:25;background:#fff8;display:grid;place-items:center}
+.spin[hidden]{display:none}
+.spin div{width:40px;height:40px;border:4px solid var(--primary-c);border-top-color:var(--primary);border-radius:50%;animation:r 0.8s linear infinite}
+@keyframes r{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>UC5 Returns</h1>
+  <span class="badge" id="modeBadge" hidden>DEMO</span>
+  <button class="icon-btn" id="btnRefresh" title="Refresh"><svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>
+  <button class="icon-btn" id="btnSettings" title="Settings"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></button>
+</header>
+
+<main>
+  <!-- ============ SCAN / INTAKE ============ -->
+  <section id="tab-scan">
+    <div class="card">
+      <label class="f" for="barcode">Return label barcode</label>
+      <div class="row">
+        <input class="in barcode" id="barcode" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Scan or type…" autofocus>
+        <button class="btn tonal" id="btnCam" title="Scan with camera"><svg viewBox="0 0 24 24"><path d="M3 5v4h2V5h4V3H5a2 2 0 0 0-2 2zm2 10H3v4a2 2 0 0 0 2 2h4v-2H5v-4zm14 4h-4v2h4a2 2 0 0 0 2-2v-4h-2v4zm0-16h-4v2h4v4h2V5a2 2 0 0 0-2-2zM7 7h2v10H7zm4 0h1v10h-1zm3 0h3v10h-3z"/></svg></button>
+      </div>
+      <div class="hint">Handheld scanner: just scan, it jumps to the next field. Phone: tap the camera button. <a href="#" id="photoLink">Scan from a photo</a>
+        <input type="file" id="photoInput" accept="image/*" capture="environment" hidden></div>
+      <div id="dupWarn" class="warnbox" hidden></div>
+
+      <div class="grid2">
+        <div>
+          <label class="f" for="model">Model No</label>
+          <input class="in" id="model" list="dl-models" autocomplete="off" placeholder="e.g. UC5-101">
+          <datalist id="dl-models"></datalist>
+        </div>
+        <div>
+          <label class="f" for="colour">Colour</label>
+          <input class="in" id="colour" list="dl-colours" autocomplete="off" placeholder="e.g. Brown">
+          <datalist id="dl-colours"></datalist>
+        </div>
+      </div>
+
+      <label class="f">Size (UK)</label>
+      <div class="chips" id="sizeChips"></div>
+
+      <div class="grid2">
+        <div>
+          <label class="f">Needs cleaning / finishing?</label>
+          <div class="seg" data-field="cleaning">
+            <button type="button" data-val="Yes" class="yes">Yes</button>
+            <button type="button" data-val="No" class="no">No</button>
+          </div>
+        </div>
+        <div>
+          <label class="f">Shoe box</label>
+          <div class="seg" data-field="box">
+            <button type="button" data-val="Replace" class="yes">Replace</button>
+            <button type="button" data-val="Intact" class="no">Intact</button>
+          </div>
+        </div>
+      </div>
+
+      <label class="f" for="notes">Notes (optional)</label>
+      <input class="in" id="notes" placeholder="e.g. sole scuffed, missing tissue">
+
+      <button class="btn block" id="btnSave">Log return</button>
+    </div>
+    <div class="card" id="recentCard" hidden>
+      <h2>Logged this session</h2>
+      <div id="recentList"></div>
+    </div>
+  </section>
+
+  <!-- ============ WORK QUEUE ============ -->
+  <section id="tab-queue" hidden>
+    <input class="in" id="search" placeholder="Search barcode, model, colour, Return ID…" style="margin-bottom:12px">
+    <div class="filters" id="filters"></div>
+    <div id="queueList"></div>
+  </section>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section id="tab-dash" hidden>
+    <div class="stats" id="stats"></div>
+    <div class="card"><h2>Most returned models</h2><div id="topModels"></div></div>
+    <div class="card"><h2>Most returned sizes</h2><div id="topSizes"></div></div>
+  </section>
+</main>
+
+<nav>
+  <button data-tab="scan" class="on"><span class="pill"><svg viewBox="0 0 24 24"><path d="M2 6h2v12H2zm3 0h1v12H5zm2 0h3v12H7zm4 0h1v12h-1zm3 0h2v12h-2zm3 0h1v12h-1zm2 0h3v12h-3z"/></svg></span>Scan in</button>
+  <button data-tab="queue"><span class="pill"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg></span>Queue</button>
+  <button data-tab="dash"><span class="pill"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg></span>Dashboard</button>
+</nav>
+
+<!-- Camera modal -->
+<div class="modal" id="camModal" hidden>
+  <div class="sheet">
+    <h2>Scan return label</h2>
+    <div id="reader"></div>
+    <div class="hint">Hold the barcode flat inside the box. Good light helps.</div>
+    <div style="text-align:right;margin-top:12px"><button class="btn text" id="btnCamClose">Cancel</button></div>
+  </div>
+</div>
+<div id="fileReader" hidden></div>
+
+<!-- Settings modal -->
+<div class="modal" id="setModal" hidden>
+  <div class="sheet">
+    <h2>Settings</h2>
+    <div id="setMsg" class="warnbox" hidden></div>
+    <label class="f" for="setUser">Your name (saved as “Entered By”)</label>
+    <input class="in" id="setUser" list="dl-users" placeholder="e.g. Ravi">
+    <datalist id="dl-users"></datalist>
+    <label class="f" for="setPin">App PIN</label>
+    <input class="in" id="setPin" type="password" inputmode="numeric" placeholder="Set in Apps Script → APP_PIN">
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px">
+      <button class="btn text" id="btnSetCancel">Cancel</button>
+      <button class="btn" id="btnSetSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+<div class="spin" id="spin" hidden><div></div></div>
+
+<script>
+/* =========================================================
+   CONFIG — paste your Apps Script Web App URL (ends in /exec).
+   Leave empty to run in DEMO mode (data stays in this browser).
+   ========================================================= */
+const API_URL = '';
+
+const DEMO = !API_URL;
+const STATUSES = ['Received','Cleaning','Repackaging','Ready to Ship','Unsellable'];
+const CLOSED = ['Ready to Ship','Unsellable'];
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+const S = {
+  lists:{models:[],colours:[],sizes:[],users:[]},
+  records:[], session:[],
+  filter:'Active', q:'',
+  form:{size:'',cleaning:'',box:''}
+};
+
+function store(k,v){ try{ if(v===undefined) return localStorage.getItem('uc5r_'+k); localStorage.setItem('uc5r_'+k,v); }catch(e){ return null; } }
+const cfg = { get pin(){ return store('pin')||''; }, get user(){ return store('user')||''; } };
+
+function nextStatus(r){
+  switch(r.status){
+    case 'Received': return r.cleaning==='Yes' ? 'Cleaning' : 'Repackaging';
+    case 'Cleaning': return 'Repackaging';
+    case 'Repackaging': return 'Ready to Ship';
+    default: return null;
+  }
+}
+
+/* ---------------- API ---------------- */
+async function api(action, data){
+  if(DEMO) return Demo.call(action, data||{});
+  // GET with URL params — Apps Script drops POST bodies.
+  const qs = new URLSearchParams({action, pin:cfg.pin, user:cfg.user, data:JSON.stringify(data||{}), _:Date.now()});
+  const res = await fetch(API_URL + '?' + qs.toString(), {method:'GET', redirect:'follow'});
+  const j = await res.json();
+  if(!j.ok){
+    if(j.error==='BAD_PIN'){ openSettings('PIN missing or wrong.'); throw new Error('PIN required'); }
+    throw new Error(j.error);
+  }
+  return j.data;
+}
+
+const Demo = {
+  load(){ try{ return JSON.parse(localStorage.getItem('uc5r_demo')||'[]'); }catch(e){ return []; } },
+  save(a){ try{ localStorage.setItem('uc5r_demo', JSON.stringify(a)); }catch(e){} },
+  lists:{models:['UC5-101','UC5-102','UC5-205','UC5-310'],colours:['Black','Brown','Tan','Navy','White'],sizes:['3','4','5','6','7','8','9','10','11','12'],users:[]},
+  call(action, d){
+    const recs = this.load(), now = new Date().toISOString(), user = cfg.user;
+    if(action==='bootstrap') return {lists:this.lists, records:recs};
+    if(action==='add'){
+      if(!d.force){ const dup = recs.find(r=>r.barcode===d.barcode); if(dup) return {duplicate:dup}; }
+      const n = recs.reduce((m,r)=>Math.max(m, parseInt(String(r.id).replace(/\D/g,''))||0), 0) + 1;
+      const r = {id:'RT-'+String(n).padStart(5,'0'), entered:now, barcode:d.barcode, model:d.model, colour:d.colour, size:d.size,
+        cleaning:d.cleaning, box:d.box, status:'Received', statusAt:now, cleaningAt:'', repackAt:'', readyAt:'', tatHrs:'',
+        notes:d.notes||'', enteredBy:user, updatedBy:user};
+      recs.push(r); this.save(recs); return r;
+    }
+    if(action==='setStatus'){
+      const r = recs.find(x=>x.id===d.id); if(!r) throw new Error('Return ID not found');
+      const to = d.to || nextStatus(r); if(!to) throw new Error('No next status');
+      r.status = to; r.statusAt = now;
+      const k = {'Cleaning':'cleaningAt','Repackaging':'repackAt','Ready to Ship':'readyAt'}[to]; if(k) r[k] = now;
+      if(to==='Ready to Ship') r.tatHrs = Math.round((Date.now()-new Date(r.entered))/36e5*10)/10;
+      if(d.note) r.notes = r.notes ? r.notes+' | '+d.note : d.note;
+      r.updatedBy = user; this.save(recs); return {...r};
+    }
+    throw new Error('Unknown action');
+  }
+};
+
+/* ---------------- Utils ---------------- */
+const esc = s => String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function fmt(iso){ if(!iso) return ''; const d=new Date(iso); return isNaN(d)?'':d.toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',hour12:true}); }
+function age(iso){ const h=(Date.now()-new Date(iso))/36e5; if(!(h>=0)) return ''; return h<1?Math.round(h*60)+'m':h<48?Math.round(h)+'h':Math.round(h/24)+'d'; }
+function isToday(iso){ const d=new Date(iso), n=new Date(); return d.toDateString()===n.toDateString(); }
+let toastT;
+function toast(msg, kind){ const t=$('#toast'); t.textContent=msg; t.className='toast'+(kind?' '+kind:''); t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true, kind==='err'?5000:2500); }
+function busy(on){ $('#spin').hidden=!on; }
+function beep(){
+  try{ const a=new (window.AudioContext||window.webkitAudioContext)(), o=a.createOscillator(), g=a.createGain();
+    o.frequency.value=1100; g.gain.value=.15; o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+.09); }catch(e){}
+  if(navigator.vibrate) navigator.vibrate(60);
+}
+function upsert(r){ const i=S.records.findIndex(x=>x.id===r.id); if(i>=0) S.records[i]=r; else S.records.push(r); }
+function stClass(s){ return 'st st-'+String(s).split(' ')[0]; }
+
+/* ---------------- Tabs ---------------- */
+$$('nav button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+function showTab(t){
+  $$('nav button').forEach(b=>b.classList.toggle('on', b.dataset.tab===t));
+  ['scan','queue','dash'].forEach(x=>$('#tab-'+x).hidden = x!==t);
+  render();
+  if(t==='scan') $('#barcode').focus();
+}
+
+/* ---------------- Intake form ---------------- */
+function renderLists(){
+  $('#dl-models').innerHTML = S.lists.models.map(v=>`<option value="${esc(v)}">`).join('');
+  $('#dl-colours').innerHTML = S.lists.colours.map(v=>`<option value="${esc(v)}">`).join('');
+  $('#dl-users').innerHTML = S.lists.users.map(v=>`<option value="${esc(v)}">`).join('');
+  const sizes = S.lists.sizes.length ? S.lists.sizes : ['3','4','5','6','7','8','9','10','11','12'];
+  $('#sizeChips').innerHTML = sizes.map(s=>`<button type="button" class="chip${S.form.size===s?' on':''}" data-size="${esc(s)}">${esc(s)}</button>`).join('');
+}
+$('#sizeChips').onclick = e=>{ const b=e.target.closest('[data-size]'); if(!b) return; S.form.size=b.dataset.size; $$('#sizeChips .chip').forEach(c=>c.classList.toggle('on', c===b)); };
+$$('.seg').forEach(seg=>seg.onclick = e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  S.form[seg.dataset.field]=b.dataset.val;
+  seg.querySelectorAll('button').forEach(x=>x.classList.toggle('on', x===b));
+});
+
+function setBarcode(v){ $('#barcode').value=String(v).trim(); checkDup(); $('#model').focus(); }
+function checkDup(){
+  const v=$('#barcode').value.trim(), w=$('#dupWarn');
+  const r = v && S.records.find(x=>x.barcode===v);
+  w.hidden=!r;
+  if(r) w.innerHTML=`Already logged as <b>${esc(r.id)}</b> — ${esc(r.model)} · ${esc(r.colour)} · ${esc(r.size)} on ${fmt(r.entered)} (${esc(r.status)}).`;
+}
+$('#barcode').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); if($('#barcode').value.trim()){ checkDup(); beep(); $('#model').focus(); } } });
+$('#barcode').addEventListener('change', checkDup);
+$('#model').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('#colour').focus(); } });
+$('#colour').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('#colour').blur(); } });
+
+function resetForm(){
+  $('#barcode').value=''; $('#model').value=''; $('#colour').value=''; $('#notes').value='';
+  S.form={size:'',cleaning:'',box:''};
+  $$('.chip.on, .seg button.on').forEach(x=>x.classList.remove('on'));
+  $('#dupWarn').hidden=true; $('#barcode').focus();
+}
+
+async function saveReturn(force){
+  if(!cfg.user && !DEMO) return openSettings('Enter your name first.');
+  const d = {barcode:$('#barcode').value.trim(), model:$('#model').value.trim(), colour:$('#colour').value.trim(),
+    size:S.form.size, cleaning:S.form.cleaning, box:S.form.box, notes:$('#notes').value.trim(), force:!!force};
+  const missing = [['barcode','Barcode'],['model','Model No'],['colour','Colour'],['size','Size'],['cleaning','Cleaning'],['box','Shoe box']]
+    .filter(([k])=>!d[k]).map(x=>x[1]);
+  if(missing.length) return toast('Missing: '+missing.join(', '), 'err');
+  busy(true);
+  try{
+    const res = await api('add', d);
+    if(res && res.duplicate){
+      busy(false);
+      const r=res.duplicate;
+      if(confirm(`Barcode already logged as ${r.id} (${r.model} · ${r.colour} · ${r.size}) on ${fmt(r.entered)}.\n\nLog it again as a new return?`)) return saveReturn(true);
+      return;
+    }
+    upsert(res); S.session.unshift(res.id);
+    toast(`Logged ${res.id}`); beep(); resetForm(); render();
+    if(!DEMO) refreshQuiet();
+  }catch(e){ toast(e.message,'err'); }
+  finally{ busy(false); }
+}
+$('#btnSave').onclick = ()=>saveReturn(false);
+
+/* ---------------- Camera scanning ---------------- */
+let scanner = null;
+const FORMATS = () => { const F=Html5QrcodeSupportedFormats; return [F.CODE_128,F.CODE_39,F.CODE_93,F.EAN_13,F.EAN_8,F.UPC_A,F.UPC_E,F.ITF,F.QR_CODE,F.DATA_MATRIX]; };
+$('#btnCam').onclick = openCamera;
+$('#btnCamClose').onclick = closeCamera;
+async function openCamera(){
+  if(!window.Html5Qrcode) return toast('Scanner library did not load. Check internet.', 'err');
+  $('#camModal').hidden = false;
+  scanner = new Html5Qrcode('reader', {verbose:false, formatsToSupport:FORMATS(), experimentalFeatures:{useBarCodeDetectorIfSupported:true}});
+  try{
+    await scanner.start({facingMode:'environment'},
+      {fps:12, qrbox:(w,h)=>({width:Math.floor(Math.min(w*0.92,380)), height:Math.floor(Math.min(h*0.5,170))})},
+      txt=>{ if(!scanner) return; closeCamera(); setBarcode(txt); beep(); },
+      ()=>{});
+  }catch(e){
+    closeCamera();
+    toast('Camera not available ('+(e.message||e)+'). Use "Scan from a photo" or a handheld scanner.', 'err');
+  }
+}
+async function closeCamera(){
+  $('#camModal').hidden = true;
+  const s = scanner; scanner = null;
+  if(s){ try{ await s.stop(); }catch(e){} try{ s.clear(); }catch(e){} }
+}
+$('#photoLink').onclick = e=>{ e.preventDefault(); $('#photoInput').click(); };
+$('#photoInput').onchange = async e=>{
+  const f = e.target.files[0]; e.target.value=''; if(!f) return;
+  if(!window.Html5Qrcode) return toast('Scanner library did not load.', 'err');
+  busy(true);
+  try{
+    const r = new Html5Qrcode('fileReader', {verbose:false, formatsToSupport:FORMATS()});
+    const txt = await r.scanFile(f, false);
+    setBarcode(txt); beep();
+  }catch(err){ toast('No barcode found in that photo. Try closer and flatter.', 'err'); }
+  finally{ busy(false); }
+};
+
+/* ---------------- Queue ---------------- */
+$('#search').oninput = e=>{ S.q=e.target.value.trim().toLowerCase(); renderQueue(); };
+$('#filters').onclick = e=>{ const b=e.target.closest('[data-f]'); if(!b) return; S.filter=b.dataset.f; renderQueue(); };
+
+function renderQueue(){
+  const counts = {Active:S.records.filter(r=>!CLOSED.includes(r.status)).length, All:S.records.length};
+  STATUSES.forEach(s=>counts[s]=S.records.filter(r=>r.status===s).length);
+  $('#filters').innerHTML = ['Active',...STATUSES,'All'].map(f=>`<button class="chip${S.filter===f?' on':''}" data-f="${f}">${f}<b>${counts[f]}</b></button>`).join('');
+
+  let rows = S.records.filter(r=> S.filter==='All' ? true : S.filter==='Active' ? !CLOSED.includes(r.status) : r.status===S.filter);
+  if(S.q) rows = rows.filter(r=>[r.id,r.barcode,r.model,r.colour,r.size,r.notes].join(' ').toLowerCase().includes(S.q));
+  const fifo = !['Ready to Ship','Unsellable','All'].includes(S.filter);
+  rows.sort((a,b)=> fifo ? new Date(a.entered)-new Date(b.entered) : new Date(b.statusAt)-new Date(a.statusAt));
+  $('#queueList').innerHTML = rows.length ? rows.slice(0,300).map(card).join('') : `<div class="empty">Nothing here.</div>`;
+}
+
+function actionLabel(r){
+  const n = nextStatus(r);
+  if(!n) return '';
+  if(r.status==='Received') return n==='Cleaning' ? 'Start cleaning' : 'Send to repack';
+  if(r.status==='Cleaning') return 'Cleaning done → Repack';
+  if(r.status==='Repackaging') return r.box==='Replace' ? 'Repacked in new box → Ready' : 'Repacked → Ready';
+  return 'Next';
+}
+function card(r){
+  const lbl = actionLabel(r);
+  const tl = [['In',r.entered],['Cleaning',r.cleaningAt],['Repack',r.repackAt],['Ready',r.readyAt]]
+    .filter(x=>x[1]).map(([k,v])=>`<span>${k}: ${fmt(v)}</span>`).join('');
+  return `<div class="item">
+    <div class="item-top">
+      <div><h3>${esc(r.model)} · ${esc(r.colour)} · UK ${esc(r.size)}</h3>
+      <div class="meta">${esc(r.id)} · ${esc(r.barcode)}</div></div>
+      <span class="${stClass(r.status)}">${esc(r.status)}</span>
+    </div>
+    <div class="tags">
+      ${r.cleaning==='Yes'?'<span class="tag warn">Needs cleaning</span>':'<span class="tag">No cleaning</span>'}
+      ${r.box==='Replace'?'<span class="tag err">Replace box</span>':'<span class="tag">Box intact</span>'}
+      ${!CLOSED.includes(r.status)?`<span class="tag">Waiting ${age(r.statusAt)}</span>`:''}
+      ${r.tatHrs?`<span class="tag">Turnaround ${r.tatHrs}h</span>`:''}
+    </div>
+    ${r.notes?`<div class="meta" style="margin-top:8px">📝 ${esc(r.notes)}</div>`:''}
+    <div class="timeline">${tl}</div>
+    ${CLOSED.includes(r.status)?'':`<div class="actions">
+      ${lbl?`<button class="btn" data-act="next" data-id="${esc(r.id)}">${esc(lbl)}</button>`:''}
+      <button class="btn danger" data-act="unsell" data-id="${esc(r.id)}">Unsellable</button>
+    </div>`}
+  </div>`;
+}
+
+document.addEventListener('click', async e=>{
+  const b = e.target.closest('[data-act]'); if(!b) return;
+  const id = b.dataset.id;
+  let to, note='';
+  if(b.dataset.act==='unsell'){
+    const reason = prompt('Why can\'t it be resold? (e.g. torn upper, wrong item, used)');
+    if(reason===null) return;
+    to='Unsellable'; note = reason ? 'Unsellable: '+reason : '';
+  }
+  busy(true);
+  try{ const r = await api('setStatus', {id, to, note}); upsert(r); toast(`${r.id} → ${r.status}`); render(); if(!DEMO) refreshQuiet(); }
+  catch(err){ toast(err.message,'err'); }
+  finally{ busy(false); }
+});
+
+/* ---------------- Dashboard ---------------- */
+function renderDash(){
+  const R=S.records, active=R.filter(r=>!CLOSED.includes(r.status));
+  const ready=R.filter(r=>r.status==='Ready to Ship');
+  const tats=ready.map(r=>+r.tatHrs).filter(n=>n>0);
+  const avg = tats.length ? tats.reduce((a,b)=>a+b,0)/tats.length : 0;
+  const stats = [
+    [active.length,'Pending (not yet ready)'],
+    [R.filter(r=>isToday(r.entered)).length,'Logged today'],
+    [R.filter(r=>r.status==='Cleaning').length,'In cleaning'],
+    [R.filter(r=>r.status==='Repackaging').length,'In repackaging'],
+    [active.filter(r=>r.box==='Replace').length,'New boxes needed'],
+    [R.filter(r=>r.readyAt && isToday(r.readyAt)).length,'Ready today'],
+    [ready.length,'Ready to ship (total)'],
+    [R.filter(r=>r.status==='Unsellable').length,'Unsellable'],
+    [avg ? (avg<48? avg.toFixed(1)+'h' : (avg/24).toFixed(1)+'d') : '—','Avg return → ready'],
+  ];
+  $('#stats').innerHTML = stats.map(([n,l])=>`<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+  $('#topModels').innerHTML = bars(R.map(r=>r.model));
+  $('#topSizes').innerHTML = bars(R.map(r=>'UK '+r.size));
+}
+function bars(vals){
+  const c={}; vals.forEach(v=>{ if(v) c[v]=(c[v]||0)+1; });
+  const top=Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  if(!top.length) return '<div class="empty" style="padding:16px">No data yet.</div>';
+  const max=top[0][1];
+  return top.map(([k,v])=>`<div class="bar"><span class="lbl">${esc(k)}</span><span class="track"><span class="fill" style="width:${v/max*100}%;display:block"></span></span><span class="v">${v}</span></div>`).join('');
+}
+
+/* ---------------- Recent (session) ---------------- */
+function renderRecent(){
+  const items = S.session.slice(0,8).map(id=>S.records.find(r=>r.id===id)).filter(Boolean);
+  $('#recentCard').hidden = !items.length;
+  $('#recentList').innerHTML = items.map(r=>`<div class="bar" style="justify-content:space-between"><span><b>${esc(r.id)}</b> · ${esc(r.model)} · ${esc(r.colour)} · UK ${esc(r.size)}</span><span class="${stClass(r.status)}">${esc(r.status)}</span></div>`).join('');
+}
+
+function render(){
+  if(!$('#tab-queue').hidden) renderQueue();
+  if(!$('#tab-dash').hidden) renderDash();
+  renderRecent();
+}
+
+/* ---------------- Settings ---------------- */
+function openSettings(msg){
+  $('#setMsg').hidden=!msg; $('#setMsg').textContent=msg||'';
+  $('#setUser').value=cfg.user; $('#setPin').value=cfg.pin;
+  $('#setModal').hidden=false; $('#setUser').focus();
+}
+$('#btnSettings').onclick = ()=>openSettings();
+$('#btnSetCancel').onclick = ()=>$('#setModal').hidden=true;
+$('#btnSetSave').onclick = ()=>{ store('user',$('#setUser').value.trim()); store('pin',$('#setPin').value.trim()); $('#setModal').hidden=true; load(); };
+
+/* ---------------- Load ---------------- */
+async function load(){
+  busy(true);
+  try{
+    const d = await api('bootstrap');
+    S.lists = Object.assign({models:[],colours:[],sizes:[],users:[]}, d.lists);
+    S.records = d.records || [];
+    renderLists(); render();
+  }catch(e){ toast('Could not load: '+e.message,'err'); }
+  finally{ busy(false); }
+}
+$('#btnRefresh').onclick = load;
+// Background re-fetch after every write so the Sheet stays the single source of truth.
+async function refreshQuiet(){
+  try{ const d = await api('list'); S.records = d || []; render(); }catch(e){}
+}
+setInterval(()=>{ if(!DEMO && !document.hidden) refreshQuiet(); }, 60000);
+
+$('#modeBadge').hidden = !DEMO;
+renderLists();
+if(!DEMO && !cfg.user) openSettings('Enter your name to start.');
+load();
+</script>
+</body>
+</html>
